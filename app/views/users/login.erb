@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+
+  <body>
+    <% unless locals.empty? %>
+      <h1><%= message %></h1>
+    <% end %>
+    <h1>Please Enter Your Username and a Password</h1>
+    <h2>Or You can <a href="/signup">signup</a> if you don't yet have an account.</h2>
+    <form method="post" action="/login">
+      <h2>Username:<input type="text" id="username" name="username"></h2>
+      <h2>Password:<input type="password" id="password" name="password"></h2>
+      <input type="submit" value="Login">
+    </form>
+  </body>
+</html>

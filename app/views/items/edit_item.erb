@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+
+  <body>
+    <% unless locals.empty? %>
+      <h1><%= message %></h1>
+    <% end %>
+    <h1>Name: <%=@item.name%> Information</h1>
+       <%if @item.description != ""%>
+      <h4>Description: <%=@item.description%></h4>
+    <%end%>
+      <%if @item.location != ""%>
+        <h4>Location: <%=@item.location%></h4>
+      <%end%>
+      <h4>Completed: <%=@item.completed%></h4>
+      <br><br>
+    <h1>Please Enter the Information You Wish To Change About <%=@item.name%></h1>
+    <form method="post" action="/items/<%=@item.slug%>">
+      <h2>Description:<input type="text" id="description" name="description"></h2>
+      <h2>Location:<input type="text" id="location" name="location"></h2>
+      <h2>Rank List (Enter rank itmes high to low on a scale of 0-100:<input type="number" min="0" max="100" id="rank_list" name="rank_list"></h2>
+      <h2>Completed:<input type="checkbox" id="completed" name="completed" <%='checked' if @item.completed == true %>></h2>
+      <input id="hidden" type="hidden" name="_method" value="patch">
+      <input type="submit" value="Change <%=@item.name%>">
+    </form>
+    <br>
+    <form method="post" action='/items/<%=@item.slug%>/delete'>
+        <input id="hidden" type="hidden" name="_method" value="delete">
+        <input type="submit" value="Delete <%=@item.name%>">
+    </form>
+  </body>
+</html>

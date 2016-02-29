@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+
+  <body>
+    <% unless locals.empty? %>
+      <h1><%= message %></h1>
+    <% end %>
+    <h1>Enter Information about your new bucket list item!</h1>
+    <form method="post" action="/items/new_bucket_list_item">
+      <h2>Name:<input type="text" id="name" name="name"></h2>
+      <h2>Description:<input type="text" id="description" name="description"></h2>
+      <h2>Location:<input type="text" id="location" name="location"></h2>
+      <h2>Rank List (Please rank how much you desire to complete this item on a scale high to low of 0-100:<input type="number" min="0" max="100" id="rank_list" name="rank_list"></h2>
+      <h2>Completed:<input type="checkbox" id="completed" name="completed"></h2>
+      <input type="submit" value="Submit New Bucket List Item">
+    </form>
+  </body>
+</html>
