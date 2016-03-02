@@ -13,4 +13,18 @@ class Item < ActiveRecord::Base
     end
   end
   
+  def self.make_item_connections(user)
+    @connections = {}
+    user.items.each do |item| 
+      self.all.each do |all_item|
+        if item.slug == all_item.slug && all_item.user_id != user.id
+          if !@connections["#{item.name}"] 
+            @connections["#{item.name}"] = []
+          end
+          @connections["#{item.name}"] << Helpers.connection_user(all_item.user_id)
+        end
+      end
+    end
+    @connections
+  end
 end

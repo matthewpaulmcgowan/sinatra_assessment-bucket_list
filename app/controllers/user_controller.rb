@@ -26,6 +26,7 @@ class UserController < ApplicationController
     end
     
     get '/login' do
+      binding.pry
       if Helpers.logged_in?(session)
         redirect "/homepage" 
       end
@@ -34,8 +35,10 @@ class UserController < ApplicationController
       erb :"users/login", locals: {message:"#{@message}"}
     end
     
-    post '/login' do 
+    post '/login' do
+      binding.pry
       @user = User.find_by(username: params["username"])
+      binding.pry
       if @user && @user.authenticate(params["password"])
         session[:id] = @user.id
         erb :"users/user_list"
@@ -55,9 +58,9 @@ class UserController < ApplicationController
     end
     
     get "/homepage" do
-
+binding.pry
       if !Helpers.logged_in?(session)
-        session[:message] = "Cannot view your bucket item unless logged in, please create a new user or log in to continue."
+        session[:message] = "Cannot view your bucket list unless logged in, please create a new user or log in to continue."
         redirect "/"
       end
       
@@ -65,6 +68,16 @@ class UserController < ApplicationController
       @message = session[:message]
       session[:message] = ""
       erb :"users/user_list", locals: {message:"#{@message}"}
+    end
+    
+    get "/connections" do 
+      if !Helpers.logged_in?(session)
+        session[:message] = "Cannot view connections unless logged in, please create a new user or log in to continue."
+        redirect "/"
+      end
+      @user = Helpers.current_user(session)
+      @connections = Item.make_item_connections(@user)
+      erb :"users/connect_users" 
     end
       
 end

@@ -15,13 +15,14 @@
         <h4>Location: <%=@item.location%></h4>
       <%end%>
       <h4>Completed: <%=@item.completed%></h4>
-      <form method="post" action='/items/<%=@item.slug%>/delete'>
+      <form method="post" action='/items/<%=@item.id%>/delete'>
         <input id="hidden" type="hidden" name="_method" value="delete">
         <input type="submit" value="Delete <%=@item.name%>">
       </form>  
  
-    <h3>Would You Like To Edit This <a href="/items/<%=@item.slug%>/edit">Bucket List Item</a></h3>
+    <h3>Would You Like To Edit This <a href="/items/<%=@item.id%>/edit">Bucket List Item</a></h3>
     <h3>Would You Like To View Your Personal <a href="/homepage">Bucket List</a></h3>
+    <h3>Would You Like To View Your <a href="/connections">Connections</a></h3>
     <h3>Would You Like To Add A <a href="/items/new_bucket_list_item">New Item</a></h3>
     <h3>Would You Like To <a href="/logout">Logout</a></h3>
     <h3>Would You Like To View All Persons's <a href="/items/index">Bucket List Items</a></h3>

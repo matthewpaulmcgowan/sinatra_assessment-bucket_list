@@ -8,7 +8,6 @@ class ApplicationController < Sinatra::Base
   end
   
   get '/' do
-   binding.pry
     if Helpers.logged_in?(session)
       redirect '/homepage'
     else

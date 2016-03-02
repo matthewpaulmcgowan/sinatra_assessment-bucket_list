@@ -12,6 +12,7 @@ class ItemController < ApplicationController
     User.all.each do |other_user|
       other_user.delete 
     end
+    session.clear 
     redirect "/"
   end
   
@@ -42,7 +43,6 @@ class ItemController < ApplicationController
 
     if @item.rank_list.nil?
       @item.rank_list = 0 
-      binding.pry
       @item.save
     end
 
@@ -65,13 +65,13 @@ class ItemController < ApplicationController
     erb :"items/index"
   end
   
-  delete "/items/:slug/delete" do
+  delete "/items/:id/delete" do
     if !Helpers.logged_in?(session)
       session[:message] = "Cannot delete bucket items unless logged in, please create a new user or log in to continue."
       redirect "/"
     end
     
-    @item = Item.find_by_slug(params[:slug])
+    @item = Item.find(params[:id])
     @user = Helpers.current_user(session)
     
     if !@item.user_id == Helpers.current_user(session).id
@@ -84,23 +84,31 @@ class ItemController < ApplicationController
     end
   end
   
-  get '/items/:slug' do 
+  get '/items/:id' do  
     if !Helpers.logged_in?(session)
       session[:message] = "Cannot view a bucket list item unless logged in, please create a new user or log in to continue."
       redirect "/"
     end
     
-    @item = Item.find_by_slug(params[:slug])
+    @item = Item.find(params[:id])
+    
+    if @item.user_id != session[:id]
+      session[:message] = "Cannot view a bucket list item you did not create."
+      redirect "/homepage"
+    end
+    
     erb :"items/show_item"
   end
   
-  get "/items/:slug/edit" do
+  get "/items/:id/edit" do
+    binding.pry
     if !Helpers.logged_in?(session)
       session[:message] = "Cannot edit a bucket list item unless logged in, please create a new user or log in to continue."
       redirect '/'
     end
-    
-    @item = Item.find_by_slug(params[:slug])
+   
+    @item = Item.find(params[:id])
+  
     if @item.user_id == session[:id]
       erb :"items/edit_item"
     else
@@ -110,13 +118,13 @@ class ItemController < ApplicationController
       
   end
   
-  patch "/items/:slug" do
+  patch "/items/:id" do
     if !Helpers.logged_in?(session)
        session[:message] = "Cannot edit a bucket list item unless logged in, please create a new user or log in to continue."
        redirect "/"
     end
     
-    @item = Item.find_by_slug(params[:slug])
+    @item = Item.find(params[:id])
     
     if params["description"] != "" 
       @item.description = params["description"]

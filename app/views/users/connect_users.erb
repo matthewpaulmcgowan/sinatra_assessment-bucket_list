@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+
+  <body>
+    <% unless locals.empty? %>
+      <h1><%= message %></h1>
+    <% end %>
+    <h1><%=@user.username%>'s Connections</h1>
+    <h3>This connects your bucket list items to other people who have the same bucket list items</h3>
+    <br><br>
+    
+    <%if @connections == {}%>
+      <h2>Unfortunately, You have no connections at this time, please check again soon!</h2>
+    <%else %>
+      <%@connections.each do |key, value|%>
+       <h1><%="#{key}"%></h1>
+       <%value.each do |person|%>
+         <h3><%=person.username%></h3>
+         <%end%>
+         <br>
+      <%end%>
+     <%end%>
+
+    <h3>Would You Like To View Your Personal <a href="/homepage">Bucket List</a></h3>     
+    <h3>Would You Like To Add A <a href="/items/new_bucket_list_item">New Item</a></h3>
+    <h3>Would You Like To <a href="/logout">Logout</a></h3>
+    <h3>Would You Like To View All Persons <a href="/items/index">Bucket List Items</a></h3>
+  </body>
+</html>
