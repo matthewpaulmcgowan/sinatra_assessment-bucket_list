@@ -13,6 +13,10 @@ class Item < ActiveRecord::Base
     end
   end
   
+  def self.connection_user(id)
+    User.find(id)
+  end
+  
   def self.make_item_connections(user)
     @connections = {}
     user.items.each do |item| 

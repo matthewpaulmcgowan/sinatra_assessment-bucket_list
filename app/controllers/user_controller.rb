@@ -2,7 +2,7 @@ require 'pry'
 class UserController < ApplicationController
   
     get '/signup' do
-      if Helpers.logged_in?(session)
+      if logged_in?(session)
         redirect "/homepage" 
       end
       @message = session[:message]
@@ -26,8 +26,7 @@ class UserController < ApplicationController
     end
     
     get '/login' do
-      binding.pry
-      if Helpers.logged_in?(session)
+      if logged_in?(session)
         redirect "/homepage" 
       end
       @message = session[:message]
@@ -36,9 +35,7 @@ class UserController < ApplicationController
     end
     
     post '/login' do
-      binding.pry
       @user = User.find_by(username: params["username"])
-      binding.pry
       if @user && @user.authenticate(params["password"])
         session[:id] = @user.id
         erb :"users/user_list"
@@ -49,7 +46,7 @@ class UserController < ApplicationController
     end
     
     get "/logout" do 
-      if Helpers.logged_in?(session)
+      if logged_in?(session)
         session.clear
         erb :index, locals: {message:"Sucessfully logged out."}
       else
@@ -58,24 +55,23 @@ class UserController < ApplicationController
     end
     
     get "/homepage" do
-binding.pry
-      if !Helpers.logged_in?(session)
+      if !logged_in?(session)
         session[:message] = "Cannot view your bucket list unless logged in, please create a new user or log in to continue."
         redirect "/"
       end
       
-      @user = Helpers.current_user(session)
+      @user = current_user(session)
       @message = session[:message]
       session[:message] = ""
       erb :"users/user_list", locals: {message:"#{@message}"}
     end
     
     get "/connections" do 
-      if !Helpers.logged_in?(session)
+      if !logged_in?(session)
         session[:message] = "Cannot view connections unless logged in, please create a new user or log in to continue."
         redirect "/"
       end
-      @user = Helpers.current_user(session)
+      @user = current_user(session)
       @connections = Item.make_item_connections(@user)
       erb :"users/connect_users" 
     end

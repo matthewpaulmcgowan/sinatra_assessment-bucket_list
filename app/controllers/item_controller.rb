@@ -17,7 +17,7 @@ class ItemController < ApplicationController
   end
   
   get '/items/new_bucket_list_item' do 
-    if Helpers.logged_in?(session)
+    if logged_in?(session)
       @message = session[:message]
       session[:message] = ""
       erb :"items/create_item", locals: {message:"#{@message}"}
@@ -27,13 +27,13 @@ class ItemController < ApplicationController
   end
   
   post '/items/new_bucket_list_item' do 
-    if !Helpers.logged_in?(session)
+    if !logged_in?(session)
       session[:message] = "Cannot create a bucket list unless logged in, please create a new user or log in to continue."
       redirect '/' 
     end
     
     @items = Item.all
-    @user = Helpers.current_user(session)
+    @user = current_user(session)
     if params["name"] == ""
       session[:message] = "Each new bucket list item must include a name, Please try again."
       redirect "/items/new_bucket_list_item"
@@ -55,26 +55,26 @@ class ItemController < ApplicationController
   end
   
   get '/items/index' do
-    if !Helpers.logged_in?(session)
+    if !logged_in?(session)
       session[:message] = "Cannot view all bucket items unless logged in, please create a new user or log in to continue." 
       redirect "/"
     end
     
     @items = Item.all
-    @user = Helpers.current_user(session)
+    @user = current_user(session)
     erb :"items/index"
   end
   
   delete "/items/:id/delete" do
-    if !Helpers.logged_in?(session)
+    if !logged_in?(session)
       session[:message] = "Cannot delete bucket items unless logged in, please create a new user or log in to continue."
       redirect "/"
     end
     
     @item = Item.find(params[:id])
-    @user = Helpers.current_user(session)
+    @user = current_user(session)
     
-    if !@item.user_id == Helpers.current_user(session).id
+    if !@item.user_id == current_user(session).id
       session[:message] = "Bucket List Item Created By Another User"
       redirect "/homepage" 
     else
@@ -85,7 +85,7 @@ class ItemController < ApplicationController
   end
   
   get '/items/:id' do  
-    if !Helpers.logged_in?(session)
+    if !logged_in?(session)
       session[:message] = "Cannot view a bucket list item unless logged in, please create a new user or log in to continue."
       redirect "/"
     end
@@ -102,7 +102,7 @@ class ItemController < ApplicationController
   
   get "/items/:id/edit" do
     binding.pry
-    if !Helpers.logged_in?(session)
+    if !logged_in?(session)
       session[:message] = "Cannot edit a bucket list item unless logged in, please create a new user or log in to continue."
       redirect '/'
     end
@@ -119,7 +119,7 @@ class ItemController < ApplicationController
   end
   
   patch "/items/:id" do
-    if !Helpers.logged_in?(session)
+    if !logged_in?(session)
        session[:message] = "Cannot edit a bucket list item unless logged in, please create a new user or log in to continue."
        redirect "/"
     end

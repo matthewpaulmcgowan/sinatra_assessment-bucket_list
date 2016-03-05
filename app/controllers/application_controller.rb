@@ -8,14 +8,23 @@ class ApplicationController < Sinatra::Base
   end
   
   get '/' do
-    if Helpers.logged_in?(session)
+    if logged_in?(session)
       redirect '/homepage'
     else
       @message = session[:message]
       session[:message] = ""
       erb :index, locals: {message:"#{@message}"}
-      
     end
   end
+  
+  def logged_in?(session)
+    !!session[:id]
+  end
+
+  def current_user(session)
+    User.find(session[:id])
+  end
+  
+  
   
 end
