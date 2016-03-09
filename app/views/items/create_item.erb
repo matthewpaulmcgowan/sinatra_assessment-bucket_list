@@ -7,8 +7,17 @@
     <% unless locals.empty? %>
       <h1><%= message %></h1>
     <% end %>
-    <h1>Enter Information about your new bucket list item!</h1>
+    <h1>Select Bucket List Items You Would Like to Add To Your List or Create Your Own Below!</h1>
     <form method="post" action="/items/new_bucket_list_item">
+      <%if @items != []%>    
+        <%@items.each do |item|%>
+            <%if !@user.items.collect{|item|item[:name]}.include?(item.name)%>
+              <h3><input type="checkbox" name="item[item_ids][]" value="<%=item.id%>" id="item_<%=item.id%>"><%=item.name%></input></h3>
+            <%end%>
+        <%end%>
+    <%end%>
+      
+   
       <h2>Name:<input type="text" id="name" name="name"></h2>
       <h2>Description:<input type="text" id="description" name="description"></h2>
       <h2>Location:<input type="text" id="location" name="location"></h2>

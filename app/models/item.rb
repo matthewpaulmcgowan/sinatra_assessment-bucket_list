@@ -1,5 +1,6 @@
 class Item < ActiveRecord::Base
-  belongs_to :user
+  has_many :item_users
+  has_many :users, through: :item_users
   
   def slug
     @slug = name.downcase.gsub(/\W+/,"-")
@@ -25,7 +26,7 @@ class Item < ActiveRecord::Base
           if !@connections["#{item.name}"] 
             @connections["#{item.name}"] = []
           end
-          @connections["#{item.name}"] << Helpers.connection_user(all_item.user_id)
+          @connections["#{item.name}"] << Item.connection_user(all_item.user_id)
         end
       end
     end
