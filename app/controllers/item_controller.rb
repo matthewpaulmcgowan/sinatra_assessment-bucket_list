@@ -6,9 +6,7 @@ class ItemController < ApplicationController
     Item.all.each do |item| 
       item.delete 
     end
-    User.all.each do |user|
-      user.items = []
-    end
+    
     User.all.each do |other_user|
       other_user.delete 
     end
@@ -20,9 +18,16 @@ class ItemController < ApplicationController
     if logged_in?(session)
       @message = session[:message]
       session[:message] = ""
-      @unique_items = Item.all.map{|item|item[:name]}.uniq
-      @items = @unique_items.collect{|item_name|Item.find_by(name: item_name)}
       @user = current_user(session)
+      @unique_items = Item.all.map{|item|item[:name]}.uniq  #populates an array of unique names of Items created by all users
+      @items_not_created_by_user = @unique_items.collect do |item_name|
+        if !@user.items.collect{|user_item|user_item[:name]}.include?(item_name) #iterates through and collects only item names created by all other users
+          item_name
+        end
+      end.compact! #removes nil values
+      @items = @items_not_created_by_user.collect{|item_name|Item.find_by(name: item_name)} #repuopulates the array to have the entire item instance, and not just name
+      
+      
       erb :"items/create_item", locals: {message:"#{@message}"}
     else
       session[:message] = "Cannot create a bucket list unless logged in, please create a new user or log in to continue."
@@ -31,7 +36,7 @@ class ItemController < ApplicationController
   end
   
   post '/items/new_bucket_list_item' do 
-    binding.pry
+  
     if !logged_in?(session)
       session[:message] = "Cannot create a bucket list unless logged in, please create a new user or log in to continue."
       redirect '/' 
@@ -41,27 +46,23 @@ class ItemController < ApplicationController
     @new_items = []
     
     if params["name"] != "" && !@user.items.collect{|item|item[:name]}.include?(params["name"]) 
-        @item = Item.create(name: params["name"], description: params["description"], location: params["location"], rank_list: params["rank_list"], user_id: session[:id])
+      @item = Item.create(name: params["name"], description: params["description"], location: params["location"], rank_list: params["rank_list"], user_id: session[:id])
     
-    if @item.rank_list.nil?
-      @item.rank_list = 0 
-      @item.save
-    end
+      if @item.rank_list.nil?
+        @item.rank_list = 0 
+        @item.save
+      end
 
-    if params["completed"] 
-      @item.completed = true
-      @item.save
-    end
-    @user.items << @item
-      binding.pry
-       #@item.users << @user
-      #@user.items << @item
+      if params["completed"] 
+        @item.completed = true
+        @item.save
+      end
+      @user.items << @item
       @new_items << @item
-      
     end
     
-    if params["item"]["item_ids"]
-      params["item"]["item_ids"].each do |item_id|
+    if params.any?{|key,value| key == "item_ids"}
+      params["item_ids"].each do |item_id|
         @found_item = Item.find(item_id.to_i)
         if !@user.items.collect{|item|item[:name]}.include?(@found_item.name) 
           @new_item = Item.create(name: @found_item.name, description: @found_item.description, location: @found_item.location, rank_list: 0, user_id: session[:id], completed: false)
@@ -71,7 +72,7 @@ class ItemController < ApplicationController
       end
       
     end
-    binding.pry
+ 
     if @new_items != []
       if @item.nil?
         @item = @new_items.last
@@ -137,7 +138,6 @@ class ItemController < ApplicationController
   end
   
   get "/items/:id/edit" do
-    binding.pry
     if !logged_in?(session)
       session[:message] = "Cannot edit a bucket list item unless logged in, please create a new user or log in to continue."
       redirect '/'
@@ -148,7 +148,7 @@ class ItemController < ApplicationController
     if @item.user_id == session[:id]
       erb :"items/edit_item"
     else
-      session[:message] = "Can only delete bucket list items you have created."
+      session[:message] = "Can only edit bucket list items you have created."
       redirect "/homepage" 
     end
       

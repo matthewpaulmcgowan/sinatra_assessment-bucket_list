@@ -1,6 +1,5 @@
 class Item < ActiveRecord::Base
-  has_many :item_users
-  has_many :users, through: :item_users
+  belongs_to :user
   
   def slug
     @slug = name.downcase.gsub(/\W+/,"-")

@@ -13,7 +13,7 @@ class UserController < ApplicationController
     post '/signup' do 
       if params["username"] == ""
         session[:message] = "Username must contain characters, please enter new Username."
-        redirect "/usignup"
+        redirect "/signup"
       end
       @user = User.new(username: params["username"], password: params["password"])
       if @user.save 

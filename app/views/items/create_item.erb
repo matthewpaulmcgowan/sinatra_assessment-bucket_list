@@ -11,9 +11,7 @@
     <form method="post" action="/items/new_bucket_list_item">
       <%if @items != []%>    
         <%@items.each do |item|%>
-            <%if !@user.items.collect{|item|item[:name]}.include?(item.name)%>
-              <h3><input type="checkbox" name="item[item_ids][]" value="<%=item.id%>" id="item_<%=item.id%>"><%=item.name%></input></h3>
-            <%end%>
+              <h3><input type="checkbox" name="item_ids[]" value="<%=item.id%>" id="item_<%=item.id%>"><%=item.name%></input></h3>
         <%end%>
     <%end%>
       
