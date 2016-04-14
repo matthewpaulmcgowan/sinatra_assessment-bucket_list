@@ -19,15 +19,7 @@ class ItemController < ApplicationController
       @message = session[:message]
       session[:message] = ""
       @user = current_user(session)
-      @unique_items = Item.all.map{|item|item[:name]}.uniq  #populates an array of unique names of Items created by all users
-      @items_not_created_by_user = @unique_items.collect do |item_name|
-        if !@user.items.collect{|user_item|user_item[:name]}.include?(item_name) #iterates through and collects only item names created by all other users
-          item_name
-        end
-      end.compact! #removes nil values
-      @items = @items_not_created_by_user.collect{|item_name|Item.find_by(name: item_name)} #repuopulates the array to have the entire item instance, and not just name
-      
-      
+      @items = Item.unique_non_user_items(@user)  
       erb :"items/create_item", locals: {message:"#{@message}"}
     else
       session[:message] = "Cannot create a bucket list unless logged in, please create a new user or log in to continue."
@@ -36,7 +28,6 @@ class ItemController < ApplicationController
   end
   
   post '/items/new_bucket_list_item' do 
-  
     if !logged_in?(session)
       session[:message] = "Cannot create a bucket list unless logged in, please create a new user or log in to continue."
       redirect '/' 
@@ -45,7 +36,7 @@ class ItemController < ApplicationController
     @user = current_user(session)
     @new_items = []
     
-    if params["name"] != "" && !@user.items.collect{|item|item[:name]}.include?(params["name"]) 
+    if params["name"] != "" && !@user.user_item_name_array.include?(params["name"]) 
       @item = Item.create(name: params["name"], description: params["description"], location: params["location"], rank_list: params["rank_list"], user_id: session[:id])
     
       if @item.rank_list.nil?
@@ -60,17 +51,16 @@ class ItemController < ApplicationController
       @user.items << @item
       @new_items << @item
     end
-    
+
     if params.any?{|key,value| key == "item_ids"}
       params["item_ids"].each do |item_id|
         @found_item = Item.find(item_id.to_i)
-        if !@user.items.collect{|item|item[:name]}.include?(@found_item.name) 
+        if !@user.user_item_name_array.include?(@found_item.name) 
           @new_item = Item.create(name: @found_item.name, description: @found_item.description, location: @found_item.location, rank_list: 0, user_id: session[:id], completed: false)
           @user.items << @new_item
           @new_items << @new_item
         end
       end
-      
     end
  
     if @new_items != []

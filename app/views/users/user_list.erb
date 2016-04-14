@@ -8,8 +8,7 @@
       <h1><%= message %></h1>
     <% end %>
     <h1><%=@user.username%>'s Bucket List</h1>
-    <%sorted_array = @user.items.sort_by{|item|-item.rank_list}%>
-    <%sorted_array.each do |ranked_item|%>
+    <%@sorted_user_items.each do |ranked_item|%>
       <h2>Name: <%=ranked_item.name%></h2>
       <%if ranked_item.description != ""%>
         <h4>Description: <%=ranked_item.description%></h4>

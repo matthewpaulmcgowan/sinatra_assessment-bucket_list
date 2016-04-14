@@ -18,6 +18,7 @@ class UserController < ApplicationController
       @user = User.new(username: params["username"], password: params["password"])
       if @user.save 
         session[:id] = @user.id
+        @sorted_user_items = @user.sort_items_by_rank_list
         erb :"users/user_list"
       else
         session[:message] = "Password must not be left empty, please enter new Password."
@@ -38,6 +39,7 @@ class UserController < ApplicationController
       @user = User.find_by(username: params["username"])
       if @user && @user.authenticate(params["password"])
         session[:id] = @user.id
+        @sorted_user_items = @user.sort_items_by_rank_list
         erb :"users/user_list"
       else
         session[:message] = "Login unsucessful, Please re-enter Username and Password"
@@ -59,8 +61,9 @@ class UserController < ApplicationController
         session[:message] = "Cannot view your bucket list unless logged in, please create a new user or log in to continue."
         redirect "/"
       end
-      
+   
       @user = current_user(session)
+      @sorted_user_items = @user.sort_items_by_rank_list
       @message = session[:message]
       session[:message] = ""
       erb :"users/user_list", locals: {message:"#{@message}"}
